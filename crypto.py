@@ -62,9 +62,8 @@ cryptocurrencies = coin.get_coin_list(coins='all')
 cryptocurrencies_names = get_crypto_name(cryptocurrencies)
 cryptocurrencies_acronym = cryptocurrencies.keys()
 
-input_cryptocurrency = ''
 
-while input_cryptocurrency != 'exit':
+while True:
 
 	print("\n - Enter the name or acronym of the cryptocurrency you want")
 	print("   (ex : 'BTC' or 'Bitcoin')")
@@ -78,7 +77,7 @@ while input_cryptocurrency != 'exit':
 		print_list(cryptocurrencies_fullname)
 
 	elif input_cryptocurrency == 'exit':
-		pass
+		sys.exit(0)
 
 	else:
 
