@@ -19,21 +19,33 @@ import os
 import sys
 
 
-def get_crypto_full_name(coins):
+def get_crypto_full_name(cryptocurrencies):
+	"""
+	Prend en paramètre la liste complète des cryptomonnaies
+	Retourne la liste de seulement les Noms Complets de celles-ci
+	"""
 	list_names = []
-	for key, value in coins.items():
+	for key, value in cryptocurrencies.items():
 		list_names.append(value.get('FullName'))
 	return list_names
 
 
-def get_crypto_name(coins):
+def get_crypto_name(cryptocurrencies):
+	"""
+	Prend en paramètre la liste complète des cryptomonnaies
+	Retourne la liste de seulement les Noms de celles-ci
+	"""
 	list_names = []
-	for key, value in coins.items():
+	for key, value in cryptocurrencies.items():
 		list_names.append(value.get('CoinName'))
 	return list_names
 
 
 def find_key(d, value):
+	"""
+	Renvoi la liste de toutes les clés parentes de la valeur passé en paramètre dans le
+	dic passé en paramètre
+	"""
 	for k,v in d.items():
 		if isinstance(v, dict):
 			p = find_key(v, value)
@@ -43,12 +55,36 @@ def find_key(d, value):
 			return [k]
 
 
+def get_price(cryptocurrency, currency):
+	prices_crypto = price.get_current_price(cryptocurrency, [currency], e='all', try_conversion=True, full=False, format='raw')
+	return prices_crypto.get(cryptocurrency).get(currency)
+
+
+def print_price(cryptocurrency, price, currency):
+	print('\t1 ' + cryptocurrency + ' = ' + str(price) + symbols.get(currency))
+	print('\n')
+
+
 def print_list(list):
-	for row in list:
-		print(row)
+	"""
+	Affiche le contenu d'une liste
+	"""
+
+	if len(list) % 2 != 0:
+		list.append(" ")
+
+	split = int(len(list) / 2)
+	l1 = list[0:split]
+	l2 = list[split:]
+
+	for key, value in zip(l1, l2):
+		print("{0:<40s} {1}".format(key, value))
 
 
 def clear():
+	"""
+	Clear l'écran
+	"""
 	os.system('cls' if os.name == 'nt' else 'clear')
 
 
@@ -61,6 +97,7 @@ print("\t*****************************")
 cryptocurrencies = coin.get_coin_list(coins='all')
 cryptocurrencies_names = get_crypto_name(cryptocurrencies)
 cryptocurrencies_acronym = cryptocurrencies.keys()
+symbols = {'USD': '$', 'EUR': '€'}
 
 
 while True:
@@ -89,14 +126,8 @@ while True:
 				input_cryptocurrency = find_key(cryptocurrencies, input_cryptocurrency)[0]
 
 			# récupération des prix
-			prices_crypto = price.get_current_price(input_cryptocurrency, ["EUR", "USD"], e='all', try_conversion=True, full=False, format='raw')
-
-			prix_euro = prices_crypto.get(input_cryptocurrency).get('EUR')
-			prix_dollar = prices_crypto.get(input_cryptocurrency).get('USD')
-
-			print('\t1 ' + input_cryptocurrency + ' = ' + str(prix_euro) + '€')
-			print('\t1 ' + input_cryptocurrency + ' = ' + str(prix_dollar) + '$')
-			print("\n")
+			prix_dollar = get_price(input_cryptocurrency, 'USD')
+			print_price(input_cryptocurrency, prix_dollar, 'USD')
 
 		else:
 			sys.stderr.write("Error : Undefined CryptoCurrency")
